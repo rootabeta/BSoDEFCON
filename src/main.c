@@ -166,11 +166,12 @@ void main(void) {
 
     check_game_boy_color();
 
-    bool     display_sd_boot_error = false;
-    bool     first_pass = true;
-    uint8_t  img_select;
-    bool     rainbow_mode = false; // LEDs to rainbow mode
-    
+    uint8_t      img_select;
+    bool         display_sd_boot_error = false;
+    bool         first_pass            = true;
+    unsigned int led_counter           = 0; // increment over time
+    unsigned int led_mode              = 1; // 0 for off, so we start with all-blue
+    int          led_speed             = 1; // speed for LED effects to go at - can go backwards too :3
 
     // Image toggling variable, by default show a random entry
     // If SRAM RNG data is not initialized then show the default first image (0)
@@ -193,21 +194,30 @@ void main(void) {
 
         if (display_sd_boot_error) show_sd_boot_error();
 
-	// Set all LEDs to BSOD-flavored blue on boot
-	for (int led_index=0; led_index<8; led_index++) { 
-		set_led_color(led_index, 0, 0, 255);
-	}
-
         while(true) {
+	    led_counter++;
 
             vsync();
             UPDATE_BUTTONS();
 
-            // Handle LED - right now, it just makes one eye green as PoC
-    	    if (BUTTON_PRESSED(J_SELECT) || BUTTON_PRESSED(J_START)) { 
-		set_led_color(5, 255, 0, 0);
+	    // Change LED modes
+    	    if (BUTTON_PRESSED(J_START)) { 
+		led_mode++;
+		led_mode %= LED_MODE_COUNT;
 		waitpadup();
 	    }
+	    else if (BUTTON_PRESSED(J_SELECT)) { 
+		if (led_mode == 0) { 
+			led_mode = LED_MODE_COUNT;
+		} else { 
+			led_mode--;
+		}
+
+		waitpadup();
+	    }
+
+	    // Set the LEDs according to current mode
+	    set_leds(led_mode, led_speed, led_counter);
 
             // Handle faux reboot
             if (BUTTON_PRESSED(J_A_B_SEL_START) == (J_A_B_SEL_START)) {
@@ -237,11 +247,13 @@ void main(void) {
                 first_pass = false;
             }
 
-            // Scroll Up/Down if available
+	    // Adjust LED speed (none of the images had scroll anyhow)
             else if (BUTTON_PRESSED(J_UP)) {
-                if (SCY_REG) SCY_REG--;
+		led_speed++;
+		waitpadup();
             } else if (BUTTON_PRESSED(J_DOWN)) {
-                if (SCY_REG < scroll_limit) SCY_REG++;
+		led_speed--;
+		waitpadup();
             }
         }
     }

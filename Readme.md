@@ -8,6 +8,8 @@ A little joke Blue Screen of Death simulator (BSOD) for the Game Boy with variou
 
 Press `Left / Right / A / B` to cycle through the screens. A random one will be chosen on startup.
 
+Press Start or Select to change LED mode
+
 Currently only for Game Boy Color, it will show a game boy style crash screen on non-color models when starting up.
 
 BSOD's for

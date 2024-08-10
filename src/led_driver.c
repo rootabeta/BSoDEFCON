@@ -1,5 +1,6 @@
 #include <gbdk/platform.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "led_driver.h"
 
@@ -13,7 +14,7 @@ void set_command(unsigned int command, unsigned int subcommand) {
 }
 
 // Function to set the LED color of a given LED
-int set_led_color(
+void set_led_color(
 	unsigned char led_index,
 	unsigned char red,
 	unsigned char green,
@@ -21,24 +22,108 @@ int set_led_color(
 ) { 
 	// Thanks to @H3xCat on Discord for this code
 	// This section sets DAT0 to contain the value we want
-	DAT0_REG = red;
-	//CTL_REG = ((led_index << 4) | 0x01);
-
 	// Order the WRLED command to be run for channel R/0
-	set_command(led_index, 0x00);
-
-	DAT0_REG = green;
-	//CTL_REG = ((led_index << 4) | 0x00);
+	DAT0_REG = red;
 	set_command(led_index, 0x01);
 
+	DAT0_REG = green;
+	set_command(led_index, 0x00);
+
 	DAT0_REG = blue;
-	//CTL_REG = ((led_index << 4) | 0x02);
 	set_command(led_index, 0x02);
 
 	// Order an LEDSYNC to make the LED change take effect
 	set_command(0x09, 0x00); 
-	//CTL_REG = 0x90;
-
-	// Success
-	return 1;
 }
+
+void set_leds(
+	unsigned int led_mode, 
+	int led_speed,
+	unsigned int led_counter
+) { 
+
+	unsigned char red = 0;
+	unsigned char green = 0;
+	unsigned char blue = 0;
+
+	led_counter *= led_speed;
+
+	switch (led_mode) { 
+		// Turn off all LEDs
+		case 0:
+			for (int i=0; i<=8; i++) { 
+				set_led_color(i, 0, 0, 0);
+
+			};
+
+			break;
+
+		// Turn LEDs to BSoD-worthy Blue (default)
+		case 1:
+			for (int i=0; i<=8; i++) { 
+				set_led_color(i, 0, 0, 255);
+
+			};
+
+			break;
+
+		// Rainbow pulse (thanks @kit03201 on Discord)
+		case 2:
+			if (led_counter < 12) { 
+				led_counter = 12;
+			};
+
+			led_counter %= 255;
+
+			red   = max(0,min(255,255-abs((led_counter*6)-255)))/2;
+			green = max(0,min(255,255-abs((led_counter*6)-510)))/2;
+			blue  = max(0,min(255,255-abs((led_counter*6)-765)))/2;
+
+			for (int i=0; i<=8; i++) { 
+				set_led_color(i, red, green, blue);
+			};
+
+			break;
+
+		// Rainbow runner
+		case 3:
+			for (int i=0; i<=8; i++) { 
+				led_counter *= (i * 6) % 255;
+
+				// clamp LED values
+				led_counter = min(max(led_counter, 12), 255);
+
+				max(0,min(255,255-abs((led_counter*6)-255)))/2;
+				green = max(0,min(255,255-abs((led_counter*6)-510)))/2;
+				blue  = max(0,min(255,255-abs((led_counter*6)-765)))/2;
+				set_led_color(i, red, green, blue);
+			};
+
+			break;
+
+		// Blue runners
+		case 4:
+			for (int i=0; i<=8; i++) { 
+				if ( (led_counter >> 2) % 2 == i % 2) { 
+					set_led_color(i, 0, 0, 255);
+				} else { 
+					set_led_color(i, 0, 0, 0);
+				}
+			};
+
+			break;
+
+		// Po-po runners
+		case 5:
+			for (int i=0; i<=8; i++) { 
+				if ( (led_counter >> 2) % 2 == i % 2) { 
+					set_led_color(i, 0, 0, 255);
+				} else { 
+					set_led_color(i, 255, 0, 0);
+				}
+			};
+			
+			break;
+	}
+}
+
