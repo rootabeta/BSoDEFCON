@@ -208,7 +208,8 @@ void main(void) {
 	    }
 	    else if (BUTTON_PRESSED(J_SELECT)) { 
 		if (led_mode == 0) { 
-			led_mode = LED_MODE_COUNT;
+			// Whoops! OBOE
+			led_mode = LED_MODE_COUNT - 1;
 		} else { 
 			led_mode--;
 		}
