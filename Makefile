@@ -1,7 +1,7 @@
 # If you move this project you can change the directory
 # to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
 ifndef GBDK_HOME
-	GBDK_HOME = ../../../
+	GBDK_HOME = /opt/gbdk/
 endif
 
 LCC = $(GBDK_HOME)bin/lcc
@@ -41,7 +41,7 @@ endif
 
 
 # You can set the name of the .gb ROM file here
-PROJECTNAME = gb_winbsod
+PROJECTNAME = gb_ledbsod
 
 BINDIR      = bin
 SRCDIR      = src

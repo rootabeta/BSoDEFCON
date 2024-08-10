@@ -7,7 +7,7 @@
 #include "input.h"
 #include "gbc_hicolor.h"
 #include "rng_data.h"
-
+#include "led_driver.h"
 
 // GBC HiColor images; header file names align with png file names
 #include "gbbsod_smallqr.h"
@@ -169,6 +169,8 @@ void main(void) {
     bool     display_sd_boot_error = false;
     bool     first_pass = true;
     uint8_t  img_select;
+    bool     rainbow_mode = false; // LEDs to rainbow mode
+    
 
     // Image toggling variable, by default show a random entry
     // If SRAM RNG data is not initialized then show the default first image (0)
@@ -191,10 +193,21 @@ void main(void) {
 
         if (display_sd_boot_error) show_sd_boot_error();
 
+	// Set all LEDs to BSOD-flavored blue on boot
+	for (int led_index=0; led_index<8; led_index++) { 
+		set_led_color(led_index, 0, 0, 255);
+	}
+
         while(true) {
 
             vsync();
             UPDATE_BUTTONS();
+
+            // Handle LED - right now, it just makes one eye green as PoC
+    	    if (BUTTON_PRESSED(J_SELECT) || BUTTON_PRESSED(J_START)) { 
+		set_led_color(5, 255, 0, 0);
+		waitpadup();
+	    }
 
             // Handle faux reboot
             if (BUTTON_PRESSED(J_A_B_SEL_START) == (J_A_B_SEL_START)) {
@@ -223,6 +236,7 @@ void main(void) {
 
                 first_pass = false;
             }
+
             // Scroll Up/Down if available
             else if (BUTTON_PRESSED(J_UP)) {
                 if (SCY_REG) SCY_REG--;
