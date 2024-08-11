@@ -148,6 +148,8 @@ void set_leds(
 				set_led_color(i, red, green, blue);
 			}
 
+			break;
+
 
 		// Single rainbow runner
 		case 7:
@@ -166,8 +168,6 @@ void set_leds(
 					set_led_color(index, red, green, blue);
 				}
 			}
-
-			break;
 
 			break;
 
