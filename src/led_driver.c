@@ -140,11 +140,11 @@ void set_leds(
 		
 		// Rainbow puke
 		case 6:
-			red = rand() % 255;
-			green = rand() % 255;
-			blue = rand() % 255;
-
 			for (int i=0; i<=8; i++) { 
+				red   = max(0,min(255,255-abs((i + led_counter*6)-255)))/2;
+				green = max(0,min(255,255-abs((i + led_counter*6)-510)))/2;
+				blue  = max(0,min(255,255-abs((i + led_counter*6)-765)))/2;
+
 				set_led_color(i, red, green, blue);
 			}
 
