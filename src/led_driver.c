@@ -140,30 +140,22 @@ void set_leds(
 		
 		// Rainbow puke
 		case 6:
+			red = rand() % 255;
+			green = rand() % 255;
+			blue = rand() % 255;
+
 			for (int i=0; i<=8; i++) { 
-				// For each LED, select a random hex code
-				int random_color = rainbow[rand() % 7];
-
-				// Extract RGB values from int
-				red = (random_color >> 16) & 0xFF;
-				green = (random_color >> 8) & 0xFF;
-				blue = random_color & 0xFF;
-
-				// Set designated LED to that color
 				set_led_color(i, red, green, blue);
-			};
+			}
 
-			break;
 
 		// Single rainbow runner
 		case 7:
-			int color = rainbow[rand() % 7];
 			char index = rand() % 9;
 
-			// Extract RGB values from int
-			red = (color >> 16) & 0xFF;
-			green = (color >> 8) & 0xFF;
-			blue = color & 0xFF;
+			red = rand() % 255;
+			green = rand() % 255;
+			blue = rand() % 255;
 
 			// Turn off other LEDs
 			for (int i=0; i<=8; i++) { 
@@ -177,25 +169,15 @@ void set_leds(
 
 			break;
 
-		// Random rainbow puke v2
+			break;
+
+		// One-at-a-time rainbow puke (should keep the others the same)
 		case 8:
 			red = rand() % 255;
 			green = rand() % 255;
 			blue = rand() % 255;
 
-			for (int i=0; i<=8; i++) { 
-				set_led_color(i, red, green, blue);
-			}
-
-			break;
-
-		// One-at-a-time rainbow puke
-		case 9:
-			red = rand() % 255;
-			green = rand() % 255;
-			blue = rand() % 255;
-
-			set_led_color(rand() % 9, 0, 0, 0);
+			set_led_color(rand() % 9, red, green, blue);
 
 			break;
 
