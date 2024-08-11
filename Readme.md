@@ -1,4 +1,4 @@
-A little joke Blue Screen of Death simulator (BSOD) for the Game Boy with various versions of the screen and different operating systems.
+A little joke Blue Screen of Death simulator (BSOD) for the DEF CON 32 badge, with various versions of the screen and different operating systems - plus various fancy LED flashing modes.
 
 ![Screenshot](info/gb_winbsod_3.png)
 ![Screenshot](info/gb_winbsod_4.png)

@@ -7,7 +7,7 @@
 #define min(a,b) ((a) < (b) ? (a) : (b))
 
 // Total number of LED lighting modes
-#define LED_MODE_COUNT 6
+#define LED_MODE_COUNT 8
 
 // command to send a command to the CTRL register
 void set_command(unsigned int command, unsigned int subcommand);

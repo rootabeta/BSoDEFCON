@@ -1,7 +1,10 @@
 #include <gbdk/platform.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <rand.h>
 
+#include "rng_data.h"
 #include "led_driver.h"
 
 // Function to combine a command and subcommand, and write it to control
@@ -46,6 +49,17 @@ void set_leds(
 	unsigned char green = 0;
 	unsigned char blue = 0;
 
+	int rainbow[7] = {
+		0xff0000, // Red
+		0xFFA500, // Orange
+		0xffff00, // Yellow
+		0x00ff00, // Green
+		0x0000ff, // Blue
+		0x4b0082, // Indigo
+		0x9400d3  // Violet
+	};
+
+
 	led_counter *= led_speed;
 
 	switch (led_mode) { 
@@ -73,7 +87,8 @@ void set_leds(
 				led_counter = 12;
 			};
 
-			led_counter %= 255;
+			// Makes for cleaner loops
+			led_counter %= 196;
 
 			red   = max(0,min(255,255-abs((led_counter*6)-255)))/2;
 			green = max(0,min(255,255-abs((led_counter*6)-510)))/2;
@@ -93,9 +108,10 @@ void set_leds(
 				// clamp LED values
 				led_counter = min(max(led_counter, 12), 255);
 
-				max(0,min(255,255-abs((led_counter*6)-255)))/2;
+				red   = max(0,min(255,255-abs((led_counter*6)-255)))/2;
 				green = max(0,min(255,255-abs((led_counter*6)-510)))/2;
 				blue  = max(0,min(255,255-abs((led_counter*6)-765)))/2;
+
 				set_led_color(i, red, green, blue);
 			};
 
@@ -123,6 +139,45 @@ void set_leds(
 				}
 			};
 			
+			break;
+		
+		// Rainbow puke
+		case 6:
+			for (int i=0; i<=8; i++) { 
+				// For each LED, select a random hex code
+				int random_color = rainbow[rand() % 7];
+
+				// Extract RGB values from int
+				red = (random_color >> 24) & 0xFF;
+				green = (random_color >> 16) & 0xFF;
+				blue = random_color & 0xFF;
+
+				// Set designated LED to that color
+				set_led_color(i, red, green, blue);
+			};
+
+			break;
+
+		// Single rainbow runner
+		case 7:
+			int color = rainbow[led_counter % 7];
+			char index = led_counter % 9;
+
+			// Extract RGB values from int
+			red = (color >> 24) & 0xFF;
+			green = (color >> 16) & 0xFF;
+			blue = color & 0xFF;
+
+			// Set designated LED to that color
+			set_led_color(index, red, green, blue);
+
+			// Turn off other LEDs
+			for (int i=0; i<=8; i++) { 
+				if (i != index) { 
+					set_led_color(i, 0, 0, 0);
+				}
+			}
+
 			break;
 	}
 }
