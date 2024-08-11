@@ -6,6 +6,19 @@
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) < (b) ? (a) : (b))
 
+
+// LED human-readble names
+// Thanks to @kilukarp on discord for these
+#define LED_SIDE_R_BOT  0
+#define LED_BACK_R_BOT  1
+#define LED_SIDE_L_TOP  2
+#define LED_BACK_R_TOP  3
+#define LED_EYE_R  4
+#define LED_EYE_L  5
+#define LED_SIDE_L  6
+#define LED_BACK_L_BOT  7
+#define LED_BACK_L_TOP  8
+
 // Total number of LED lighting modes
 #define LED_MODE_COUNT 9
 
