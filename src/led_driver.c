@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <rand.h>
 
-#include "rng_data.h"
 #include "led_driver.h"
 
 // Function to combine a command and subcommand, and write it to control
@@ -103,10 +102,8 @@ void set_leds(
 		// Rainbow runner
 		case 3:
 			for (int i=0; i<=8; i++) { 
-				led_counter *= (i * 6) % 255;
-
 				// clamp LED values
-				led_counter = min(max(led_counter, 12), 255);
+				led_counter = min(max(led_counter + 1, 12), 255);
 
 				red   = max(0,min(255,255-abs((led_counter*6)-255)))/2;
 				green = max(0,min(255,255-abs((led_counter*6)-510)))/2;
@@ -148,8 +145,8 @@ void set_leds(
 				int random_color = rainbow[rand() % 7];
 
 				// Extract RGB values from int
-				red = (random_color >> 24) & 0xFF;
-				green = (random_color >> 16) & 0xFF;
+				red = (random_color >> 16) & 0xFF;
+				green = (random_color >> 8) & 0xFF;
 				blue = random_color & 0xFF;
 
 				// Set designated LED to that color
@@ -160,25 +157,48 @@ void set_leds(
 
 		// Single rainbow runner
 		case 7:
-			int color = rainbow[led_counter % 7];
-			char index = led_counter % 9;
+			int color = rainbow[rand() % 7];
+			char index = rand() % 9;
 
 			// Extract RGB values from int
-			red = (color >> 24) & 0xFF;
-			green = (color >> 16) & 0xFF;
+			red = (color >> 16) & 0xFF;
+			green = (color >> 8) & 0xFF;
 			blue = color & 0xFF;
-
-			// Set designated LED to that color
-			set_led_color(index, red, green, blue);
 
 			// Turn off other LEDs
 			for (int i=0; i<=8; i++) { 
 				if (i != index) { 
 					set_led_color(i, 0, 0, 0);
+				} else { 
+					// Set designated LED to that color
+					set_led_color(index, red, green, blue);
 				}
 			}
 
 			break;
+
+		// Random rainbow puke v2
+		case 8:
+			red = rand() % 255;
+			green = rand() % 255;
+			blue = rand() % 255;
+
+			for (int i=0; i<=8; i++) { 
+				set_led_color(i, red, green, blue);
+			}
+
+			break;
+
+		// One-at-a-time rainbow puke
+		case 9:
+			red = rand() % 255;
+			green = rand() % 255;
+			blue = rand() % 255;
+
+			set_led_color(rand() % 9, 0, 0, 0);
+
+			break;
+
 	}
 }
 
